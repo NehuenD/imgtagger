@@ -11,14 +11,6 @@ struct ImageFile {
 }
 
 #[tauri::command]
-fn get_image_info(path: &str) -> Result<String, String> {
-    let image = image::open(path).map_err(|e| format!("Failed to open image: {}", e))?;
-    let width = image.width();
-    let height = image.height();
-    Ok(format!("{}x{}", width, height))
-}
-
-#[tauri::command]
 fn scan_directory(path: &str) -> Result<Vec<ImageFile>, String> {
     let mut images = Vec::new();
     for entry in WalkDir::new(path).into_iter().filter_map(|e| e.ok()) {
@@ -58,7 +50,6 @@ pub fn run() {
         .plugin(tauri_plugin_opener::init())
         .plugin(tauri_plugin_dialog::init())
         .invoke_handler(tauri::generate_handler![
-            get_image_info,
             scan_directory,
             move_file
         ])
